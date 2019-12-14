@@ -14,6 +14,8 @@
 }
 
 .rbc-addons-dnd .rbc-event {
+  padding: 0;
+  overflow: hidden;
   transition: opacity 150ms;
 }
 .rbc-addons-dnd .rbc-event:hover .rbc-addons-dnd-resize-ns-icon,

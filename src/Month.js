@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types'
 import React from 'react'
 import { findDOMNode } from 'react-dom'
@@ -194,6 +195,7 @@ class MonthView extends React.Component {
       getters,
       selected,
       popupOffset,
+      popupClassname,
     } = this.props
 
     return (
@@ -207,6 +209,7 @@ class MonthView extends React.Component {
         {({ props }) => (
           <Popup
             {...props}
+            popupClassname={popupClassname}
             popupOffset={popupOffset}
             accessors={accessors}
             getters={getters}

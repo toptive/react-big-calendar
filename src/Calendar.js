@@ -435,6 +435,11 @@ class Calendar extends React.Component {
     ]),
 
     /**
+     * Classname for popup container
+     */
+    popupClassname: PropTypes.string,
+
+    /**
      * Allows mouse selection of ranges of dates/times.
      *
      * The 'ignoreEvents' option prevents selection code from running when a

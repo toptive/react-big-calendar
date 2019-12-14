@@ -3,6 +3,7 @@ import React from 'react'
 import getOffset from 'dom-helpers/offset'
 import getScrollTop from 'dom-helpers/scrollTop'
 import getScrollLeft from 'dom-helpers/scrollLeft'
+import clsx from 'clsx'
 import * as dates from './utils/dates'
 
 import EventCell from './EventCell'
@@ -42,6 +43,7 @@ class Popup extends React.Component {
       slotEnd,
       localizer,
       popperRef,
+      popupClassname,
     } = this.props
 
     let { width } = this.props.position,
@@ -57,7 +59,7 @@ class Popup extends React.Component {
     return (
       <div
         style={{ ...this.props.style, ...style }}
-        className="rbc-overlay"
+        className={clsx('rbc-overlay', popupClassname)}
         ref={popperRef}
       >
         <div className="rbc-overlay-header">
@@ -87,6 +89,7 @@ class Popup extends React.Component {
 
 Popup.propTypes = {
   position: PropTypes.object,
+  popupClassname: PropTypes.string,
   popupOffset: PropTypes.oneOfType([
     PropTypes.number,
     PropTypes.shape({

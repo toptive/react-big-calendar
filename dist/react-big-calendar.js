@@ -2956,7 +2956,9 @@
     return (
       !!length &&
       (type == 'number' || (type != 'symbol' && reIsUint.test(value))) &&
-      value > -1 && value % 1 == 0 && value < length
+      value > -1 &&
+      value % 1 == 0 &&
+      value < length
     )
   }
 
@@ -3706,7 +3708,8 @@
           slotStart = _this$props2.slotStart,
           slotEnd = _this$props2.slotEnd,
           localizer = _this$props2.localizer,
-          popperRef = _this$props2.popperRef
+          popperRef = _this$props2.popperRef,
+          popupClassname = _this$props2.popupClassname
         var width = this.props.position.width,
           topOffset = (this.state || {}).topOffset || 0,
           leftOffset = (this.state || {}).leftOffset || 0
@@ -3719,7 +3722,7 @@
           'div',
           {
             style: _extends({}, this.props.style, {}, style),
-            className: 'rbc-overlay',
+            className: clsx('rbc-overlay', popupClassname),
             ref: popperRef,
           },
           React__default.createElement(
@@ -3754,6 +3757,7 @@
 
   Popup.propTypes = {
     position: propTypes.object,
+    popupClassname: propTypes.string,
     popupOffset: propTypes.oneOfType([
       propTypes.number,
       propTypes.shape({
@@ -10089,7 +10093,8 @@
       // Non `Object` object instances with different constructors are not equal.
       if (
         objCtor != othCtor &&
-        'constructor' in object && 'constructor' in other &&
+        'constructor' in object &&
+        'constructor' in other &&
         !(
           typeof objCtor == 'function' &&
           objCtor instanceof objCtor &&
@@ -12080,7 +12085,8 @@
           components = _this$props6.components,
           getters = _this$props6.getters,
           selected = _this$props6.selected,
-          popupOffset = _this$props6.popupOffset
+          popupOffset = _this$props6.popupOffset,
+          popupClassname = _this$props6.popupClassname
         return React__default.createElement(
           Overlay,
           {
@@ -12101,6 +12107,7 @@
             return React__default.createElement(
               Popup$1,
               _extends({}, props, {
+                popupClassname: popupClassname,
                 popupOffset: popupOffset,
                 accessors: accessors,
                 getters: getters,
@@ -15092,19 +15099,12 @@
           var isOverflowing =
             _this.contentRef.current.scrollHeight >
             _this.contentRef.current.clientHeight
-          var widths = _this._widths || []
           _this._widths = [
             getWidth(firstRow.children[0]),
             getWidth(firstRow.children[1]),
           ]
-
-          if (
-            widths[0] !== _this._widths[0] ||
-            widths[1] !== _this._widths[1]
-          ) {
-            _this.dateColRef.current.style.width = _this._widths[0] + 'px'
-            _this.timeColRef.current.style.width = _this._widths[1] + 'px'
-          }
+          _this.dateColRef.current.style.width = _this._widths[0] + 'px'
+          _this.timeColRef.current.style.width = _this._widths[1] + 'px'
 
           if (isOverflowing) {
             addClass(header, 'rbc-header-overflowing')
@@ -16980,11 +16980,14 @@
               onSelectEvent: this.handleSelectEvent,
               onDoubleClickEvent: this.handleDoubleClickEvent,
               onSelectSlot: this.handleSelectSlot,
-              onShowMore: onShowMore,
+              onShowMore: onShowMore, // ref={ref => { this.activeViewComponent = ref; }}
             })
           )
         )
-      }
+      } // getActiveViewComponentRef() {
+      //   return this.activeViewComponent;
+      // }
+
       /**
        *
        * @param date
@@ -17405,6 +17408,11 @@
         y: propTypes.number,
       }),
     ]),
+
+    /**
+     * Classname for popup container
+     */
+    popupClassname: propTypes.string,
 
     /**
      * Allows mouse selection of ranges of dates/times.

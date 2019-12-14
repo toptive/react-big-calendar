@@ -14,8 +14,8 @@ $time-selection-bg-color: rgba(0,0,0, .50) !default;
 $date-selection-bg-color: rgba(0,0,0, .10) !default;
 
 
-$event-bg: rgb(255, 0, 0) !default;
-$event-border: darken(rgb(255, 0, 0), 10%) !default;
+$event-bg: transparent !default;
+$event-border: transparent !default;
 $event-outline: #3b99fc !default;
 $event-color: #fff !default;
 $event-border-radius: 5px !default;

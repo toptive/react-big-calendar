@@ -542,7 +542,8 @@ var Popup =
         slotStart = _this$props2.slotStart,
         slotEnd = _this$props2.slotEnd,
         localizer = _this$props2.localizer,
-        popperRef = _this$props2.popperRef
+        popperRef = _this$props2.popperRef,
+        popupClassname = _this$props2.popupClassname
       var width = this.props.position.width,
         topOffset = (this.state || {}).topOffset || 0,
         leftOffset = (this.state || {}).leftOffset || 0
@@ -555,7 +556,7 @@ var Popup =
         'div',
         {
           style: _extends({}, this.props.style, {}, style),
-          className: 'rbc-overlay',
+          className: clsx('rbc-overlay', popupClassname),
           ref: popperRef,
         },
         React.createElement(
@@ -592,6 +593,7 @@ Popup.propTypes =
   process.env.NODE_ENV !== 'production'
     ? {
         position: PropTypes.object,
+        popupClassname: PropTypes.string,
         popupOffset: PropTypes.oneOfType([
           PropTypes.number,
           PropTypes.shape({
@@ -2490,7 +2492,8 @@ var MonthView =
         components = _this$props6.components,
         getters = _this$props6.getters,
         selected = _this$props6.selected,
-        popupOffset = _this$props6.popupOffset
+        popupOffset = _this$props6.popupOffset,
+        popupClassname = _this$props6.popupClassname
       return React.createElement(
         Overlay,
         {
@@ -2511,6 +2514,7 @@ var MonthView =
           return React.createElement(
             Popup$1,
             _extends({}, props, {
+              popupClassname: popupClassname,
               popupOffset: popupOffset,
               accessors: accessors,
               getters: getters,
@@ -4920,16 +4924,12 @@ var Agenda =
         var isOverflowing =
           _this.contentRef.current.scrollHeight >
           _this.contentRef.current.clientHeight
-        var widths = _this._widths || []
         _this._widths = [
           getWidth(firstRow.children[0]),
           getWidth(firstRow.children[1]),
         ]
-
-        if (widths[0] !== _this._widths[0] || widths[1] !== _this._widths[1]) {
-          _this.dateColRef.current.style.width = _this._widths[0] + 'px'
-          _this.timeColRef.current.style.width = _this._widths[1] + 'px'
-        }
+        _this.dateColRef.current.style.width = _this._widths[0] + 'px'
+        _this.timeColRef.current.style.width = _this._widths[1] + 'px'
 
         if (isOverflowing) {
           addClass(header, 'rbc-header-overflowing')
@@ -5666,11 +5666,14 @@ var Calendar =
             onSelectEvent: this.handleSelectEvent,
             onDoubleClickEvent: this.handleDoubleClickEvent,
             onSelectSlot: this.handleSelectSlot,
-            onShowMore: onShowMore,
+            onShowMore: onShowMore, // ref={ref => { this.activeViewComponent = ref; }}
           })
         )
       )
-    }
+    } // getActiveViewComponentRef() {
+    //   return this.activeViewComponent;
+    // }
+
     /**
      *
      * @param date
@@ -6093,6 +6096,11 @@ Calendar.propTypes =
             y: PropTypes.number,
           }),
         ]),
+
+        /**
+         * Classname for popup container
+         */
+        popupClassname: PropTypes.string,
 
         /**
          * Allows mouse selection of ranges of dates/times.
