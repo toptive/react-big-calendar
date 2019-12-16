@@ -221,6 +221,12 @@ button.rbc-input::-moz-focus-inner {
 
 .rbc-event-label {
   font-size: 80%;
+  position: absolute;
+  z-index: 999;
+  background-color: white;
+  top: 7px;
+  left: 10px;
+  padding-left: 5px;
 }
 
 .rbc-event-overlaps {
@@ -421,7 +427,7 @@ button.rbc-input::-moz-focus-inner {
 
 .rbc-timeslot-group {
   border-bottom: 1px solid #ddd;
-  min-height: 40px;
+  min-height: 60px;
   display: flex;
   flex-flow: column nowrap;
 }
@@ -457,7 +463,6 @@ button.rbc-input::-moz-focus-inner {
   min-height: 20px;
   flex-flow: column wrap;
   align-items: flex-start;
-  overflow: hidden;
   position: absolute;
 }
 .rbc-day-slot .rbc-event-label {

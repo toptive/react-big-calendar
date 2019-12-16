@@ -239,8 +239,12 @@ class EventContainerWrapper extends React.Component {
     if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
     else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
 
-    if (startsBeforeDay && startsAfterDay) label = localizer.messages.allDay
-    else label = localizer.format({ start, end }, format)
+    label =
+      startsBeforeDay && startsAfterDay
+        ? localizer.messages.allDay
+        : start !== end
+        ? localizer.format({ start, end }, format)
+        : start
 
     return React.cloneElement(children, {
       children: (

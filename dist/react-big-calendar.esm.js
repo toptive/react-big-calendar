@@ -2783,17 +2783,22 @@ var Event =
     function Event(data, _ref) {
       var accessors = _ref.accessors,
         slotMetrics = _ref.slotMetrics
+      var areEq =
+        eq(accessors.start(data), accessors.end(data), 'hours') &&
+        eq(accessors.start(data), accessors.end(data), 'minutes')
 
-      var _slotMetrics$getRange = slotMetrics.getRange(
-          accessors.start(data),
-          accessors.end(data)
-        ),
-        start = _slotMetrics$getRange.start,
-        startDate = _slotMetrics$getRange.startDate,
-        end = _slotMetrics$getRange.end,
-        endDate = _slotMetrics$getRange.endDate,
-        top = _slotMetrics$getRange.top,
-        height = _slotMetrics$getRange.height
+      var _ref2 = areEq
+          ? slotMetrics.getRange(
+              accessors.start(data),
+              add(accessors.start(data), 0.5, 'hours')
+            )
+          : slotMetrics.getRange(accessors.start(data), accessors.end(data)),
+        start = _ref2.start,
+        startDate = _ref2.startDate,
+        end = _ref2.end,
+        endDate = _ref2.endDate,
+        top = _ref2.top,
+        height = _ref2.height
 
       this.start = start
       this.end = end
@@ -2922,11 +2927,11 @@ function sortByRender(events) {
   return sorted
 }
 
-function getStyledEvents(_ref2) {
-  var events = _ref2.events,
-    minimumStartDifference = _ref2.minimumStartDifference,
-    slotMetrics = _ref2.slotMetrics,
-    accessors = _ref2.accessors
+function getStyledEvents(_ref3) {
+  var events = _ref3.events,
+    minimumStartDifference = _ref3.minimumStartDifference,
+    slotMetrics = _ref3.slotMetrics,
+    accessors = _ref3.accessors
   // Create proxy events and order them so that we don't have
   // to fiddle with z-indexes.
   var proxies = events.map(function(event) {
@@ -3353,6 +3358,13 @@ var DayColumn =
           if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
           else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
           if (startsBeforeDay && startsAfterDay) label = messages.allDay
+          else if (eq(start, end, 'hours') && eq(start, end, 'minutes'))
+            label = localizer.format(
+              {
+                start: start,
+              },
+              'eventTimeRangeStartFormat'
+            )
           else
             label = localizer.format(
               {
@@ -5666,14 +5678,11 @@ var Calendar =
             onSelectEvent: this.handleSelectEvent,
             onDoubleClickEvent: this.handleDoubleClickEvent,
             onSelectSlot: this.handleSelectSlot,
-            onShowMore: onShowMore, // ref={ref => { this.activeViewComponent = ref; }}
+            onShowMore: onShowMore,
           })
         )
       )
-    } // getActiveViewComponentRef() {
-    //   return this.activeViewComponent;
-    // }
-
+    }
     /**
      *
      * @param date

@@ -1,15 +1,18 @@
 import sortBy from 'lodash/sortBy'
+import * as dates from '../../utils/dates'
 
 class Event {
   constructor(data, { accessors, slotMetrics }) {
-    const {
-      start,
-      startDate,
-      end,
-      endDate,
-      top,
-      height,
-    } = slotMetrics.getRange(accessors.start(data), accessors.end(data))
+    const areEq =
+      dates.eq(accessors.start(data), accessors.end(data), 'hours') &&
+      dates.eq(accessors.start(data), accessors.end(data), 'minutes')
+
+    const { start, startDate, end, endDate, top, height } = areEq
+      ? slotMetrics.getRange(
+          accessors.start(data),
+          dates.add(accessors.start(data), 0.5, 'hours')
+        )
+      : slotMetrics.getRange(accessors.start(data), accessors.end(data))
 
     this.start = start
     this.end = end
