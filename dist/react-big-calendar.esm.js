@@ -3358,13 +3358,11 @@ var DayColumn =
           if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
           else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
           if (startsBeforeDay && startsAfterDay) label = messages.allDay
-          else if (eq(start, end, 'hours') && eq(start, end, 'minutes'))
-            label = localizer.format(
-              {
-                start: start,
-              },
-              'eventTimeRangeStartFormat'
-            )
+          else if (
+            (eq(start, end, 'hours') && eq(start, end, 'minutes')) ||
+            !event.SHOW_END_DATE
+          )
+            label = localizer.format(start, 'agendaTimeFormat')
           else
             label = localizer.format(
               {
@@ -4894,7 +4892,7 @@ var Agenda =
         var start = accessors.start(event)
 
         if (!accessors.allDay(event)) {
-          if (eq(start, end)) {
+          if (eq(start, end) || !event.SHOW_END_DATE) {
             label = localizer.format(start, 'agendaTimeFormat')
           } else if (eq(start, end, 'day')) {
             label = localizer.format(

@@ -13,7 +13,7 @@
 
 .rbc-timeslot-group {
   border-bottom: 1px solid $cell-border;
-  min-height: 60px;
+  min-height: 65px;
   display: flex;
   flex-flow: column nowrap;
 }
@@ -67,6 +67,9 @@
     line-height: 1;
     height: 100%;
     min-height: 1em;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .rbc-time-slot {
