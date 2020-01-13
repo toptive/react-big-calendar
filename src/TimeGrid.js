@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import * as animationFrame from 'dom-helpers/animationFrame'
@@ -112,6 +113,7 @@ export default class TimeGrid extends Component {
       accessors,
       localizer,
       dayLayoutAlgorithm,
+      view,
     } = this.props
 
     const resources = this.memoizedResources(this.props.resources, accessors)
@@ -131,6 +133,7 @@ export default class TimeGrid extends Component {
         return (
           <DayColumn
             {...this.props}
+            view={view}
             localizer={localizer}
             min={dates.merge(date, min)}
             max={dates.merge(date, max)}

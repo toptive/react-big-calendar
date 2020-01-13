@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types'
 import React from 'react'
 import * as dates from './utils/dates'
@@ -6,10 +7,18 @@ import TimeGrid from './TimeGrid'
 
 class Week extends React.Component {
   render() {
-    let { date, ...props } = this.props
+    let { date, popupClassname, ...props } = this.props
     let range = Week.range(date, this.props)
 
-    return <TimeGrid {...props} range={range} eventOffset={15} />
+    return (
+      <TimeGrid
+        {...props}
+        range={range}
+        view={props.view}
+        popupClassname={popupClassname}
+        eventOffset={15}
+      />
+    )
   }
 }
 

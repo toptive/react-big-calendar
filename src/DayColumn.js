@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { findDOMNode } from 'react-dom'
 import clsx from 'clsx'
 
@@ -13,6 +14,8 @@ import * as DayEventLayout from './utils/DayEventLayout'
 import TimeSlotGroup from './TimeSlotGroup'
 import TimeGridEvent from './TimeGridEvent'
 import { DayLayoutAlgorithmPropType } from './utils/propTypes'
+import EventsMultipleWeek from './EventsMultipleWeek'
+import { views } from './utils/constants'
 
 class DayColumn extends React.Component {
   state = { selecting: false, timeIndicatorPosition: null }
@@ -185,60 +188,177 @@ class DayColumn extends React.Component {
       step,
       timeslots,
       dayLayoutAlgorithm,
+      popupClassname,
+      view,
     } = this.props
 
     const { slotMetrics } = this
     const { messages } = localizer
 
-    let styledEvents = DayEventLayout.getStyledEvents({
-      events,
-      accessors,
-      slotMetrics,
-      minimumStartDifference: Math.ceil((step * timeslots) / 2),
-      dayLayoutAlgorithm,
-    })
+    if (view === views.WEEK || view === views.WORK_WEEK) {
+      const groups = {}
+      events.forEach(event => {
+        groups[accessors.start(event)] = groups[accessors.start(event)] || []
+        groups[accessors.start(event)].push(event)
+      })
 
-    return styledEvents.map(({ event, style }, idx) => {
-      let end = accessors.end(event)
-      let start = accessors.start(event)
-      let format = 'eventTimeRangeFormat'
-      let label
+      const sections = { multiple: [], single: [] }
 
-      const startsBeforeDay = slotMetrics.startsBeforeDay(start)
-      const startsAfterDay = slotMetrics.startsAfterDay(end)
+      Object.values(groups).forEach(item => {
+        if (item.length > 1) {
+          sections.multiple.push(item)
+        } else {
+          sections.single.push(item[0])
+        }
+      })
 
-      if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
-      else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
+      const singleEvent = sections.single
+      const multipleEvents = sections.multiple
 
-      if (startsBeforeDay && startsAfterDay) label = messages.allDay
-      else if (
-        (dates.eq(start, end, 'hours') && dates.eq(start, end, 'minutes')) ||
-        !event.SHOW_END_DATE
-      )
-        label = localizer.format(start, 'agendaTimeFormat')
-      else label = localizer.format({ start, end }, format)
-
-      let continuesEarlier = startsBeforeDay || slotMetrics.startsBefore(start)
-      let continuesLater = startsAfterDay || slotMetrics.startsAfter(end)
+      let styledSingleEvents = DayEventLayout.getStyledEvents({
+        events: singleEvent,
+        accessors,
+        slotMetrics,
+        minimumStartDifference: Math.ceil((step * timeslots) / 2),
+        dayLayoutAlgorithm,
+      })
 
       return (
-        <TimeGridEvent
-          style={style}
-          event={event}
-          label={label}
-          key={'evt_' + idx}
-          getters={getters}
-          rtl={rtl}
-          components={components}
-          continuesEarlier={continuesEarlier}
-          continuesLater={continuesLater}
-          accessors={accessors}
-          selected={isSelected(event, selected)}
-          onClick={e => this._select(event, e)}
-          onDoubleClick={e => this._doubleClick(event, e)}
-        />
+        <Fragment>
+          {styledSingleEvents.map(({ event, style }, idx) => {
+            let end = accessors.end(event)
+            let start = accessors.start(event)
+            let format = 'eventTimeRangeFormat'
+            let label
+
+            const startsBeforeDay = slotMetrics.startsBeforeDay(start)
+            const startsAfterDay = slotMetrics.startsAfterDay(end)
+
+            if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
+            else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
+
+            if (startsBeforeDay && startsAfterDay) label = messages.allDay
+            else if (
+              (dates.eq(start, end, 'hours') &&
+                dates.eq(start, end, 'minutes')) ||
+              !event.SHOW_END_DATE
+            )
+              label = localizer.format(start, 'agendaTimeFormat')
+            else label = localizer.format({ start, end }, format)
+
+            let continuesEarlier =
+              startsBeforeDay || slotMetrics.startsBefore(start)
+            let continuesLater = startsAfterDay || slotMetrics.startsAfter(end)
+
+            return (
+              <TimeGridEvent
+                style={style}
+                event={event}
+                label={label}
+                key={'evt_' + idx}
+                getters={getters}
+                rtl={rtl}
+                components={components}
+                continuesEarlier={continuesEarlier}
+                continuesLater={continuesLater}
+                accessors={accessors}
+                selected={isSelected(event, selected)}
+                onClick={e => this._select(event, e)}
+                onDoubleClick={e => this._doubleClick(event, e)}
+              />
+            )
+          })}
+
+          {multipleEvents.map((events, idx) => {
+            const styledEvents = DayEventLayout.getStyledEvents({
+              events: [events[0]],
+              accessors,
+              slotMetrics,
+              minimumStartDifference: Math.ceil((step * timeslots) / 2),
+              dayLayoutAlgorithm,
+            })
+
+            const props = Object.assign(
+              { ...this.props },
+              {
+                rtl: rtl,
+                view: view,
+                step: step,
+                events: events,
+                getters: getters,
+                key: 'evt_multiple' + idx,
+                selected: selected,
+                accessors: accessors,
+                localizer: localizer,
+                timeslots: timeslots,
+                components: components,
+                popupClassname: popupClassname,
+                dayLayoutAlgorithm: dayLayoutAlgorithm,
+                style: styledEvents[0].style,
+              }
+            )
+
+            return <EventsMultipleWeek {...props} />
+          })}
+        </Fragment>
       )
-    })
+    } else {
+      let styleEvent = DayEventLayout.getStyledEvents({
+        events: events,
+        accessors,
+        slotMetrics,
+        minimumStartDifference: Math.ceil((step * timeslots) / 2),
+        dayLayoutAlgorithm,
+      })
+
+      return (
+        <Fragment>
+          {styleEvent.map(({ event, style }, idx) => {
+            let end = accessors.end(event)
+            let start = accessors.start(event)
+            let format = 'eventTimeRangeFormat'
+            let label
+
+            const startsBeforeDay = slotMetrics.startsBeforeDay(start)
+            const startsAfterDay = slotMetrics.startsAfterDay(end)
+
+            if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
+            else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
+
+            if (startsBeforeDay && startsAfterDay) label = messages.allDay
+            else if (
+              (dates.eq(start, end, 'hours') &&
+                dates.eq(start, end, 'minutes')) ||
+              !event.SHOW_END_DATE
+            )
+              label = localizer.format(start, 'agendaTimeFormat')
+            else label = localizer.format({ start, end }, format)
+
+            let continuesEarlier =
+              startsBeforeDay || slotMetrics.startsBefore(start)
+            let continuesLater = startsAfterDay || slotMetrics.startsAfter(end)
+
+            return (
+              <TimeGridEvent
+                style={style}
+                event={event}
+                label={label}
+                key={'evt_' + idx}
+                getters={getters}
+                rtl={rtl}
+                components={components}
+                continuesEarlier={continuesEarlier}
+                continuesLater={continuesLater}
+                accessors={accessors}
+                selected={isSelected(event, selected)}
+                onClick={e => this._select(event, e)}
+                onDoubleClick={e => this._doubleClick(event, e)}
+              />
+            )
+          })}
+        </Fragment>
+      )
+    }
   }
 
   _selectable = () => {

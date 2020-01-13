@@ -58,6 +58,10 @@
     flex: none;
     padding-right: 5px;
     width: auto;
+
+    &.shortEvent {
+      display: none;
+    }
   }
 
   .rbc-event-content {

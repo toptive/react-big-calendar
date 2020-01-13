@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import React from 'react'
+import * as dates from './utils/dates'
 
 function stringifyPercent(v) {
   return typeof v === 'string' ? v : v + '%'
@@ -30,8 +31,16 @@ function TimeGridEvent(props) {
   let userProps = getters.eventProp(event, start, end, selected)
 
   let { height, top, width, xOffset } = style
+
+  const isShortEvent =
+    dates.diff(end, start, 'minutes') < 31 &&
+    dates.diff(end, start, 'minutes') > 0
+
   const inner = [
-    <div key="1" className="rbc-event-label">
+    <div
+      key="1"
+      className={clsx('rbc-event-label', { shortEvent: isShortEvent })}
+    >
       {label}
     </div>,
     <div key="2" className="rbc-event-content">

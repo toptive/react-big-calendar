@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment } from 'react'
 import getOffset from 'dom-helpers/offset'
 import getScrollTop from 'dom-helpers/scrollTop'
 import getScrollLeft from 'dom-helpers/scrollLeft'
@@ -8,6 +9,7 @@ import * as dates from './utils/dates'
 
 import EventCell from './EventCell'
 import { isSelected } from './utils/selection'
+import { views } from './utils/constants'
 
 class Popup extends React.Component {
   componentDidMount() {
@@ -32,6 +34,7 @@ class Popup extends React.Component {
 
   render() {
     let {
+      view,
       events,
       selected,
       getters,
@@ -66,21 +69,36 @@ class Popup extends React.Component {
           {localizer.format(slotStart, 'dayHeaderFormat')}
         </div>
         {events.map((event, idx) => (
-          <EventCell
-            key={idx}
-            type="popup"
-            event={event}
-            getters={getters}
-            onSelect={onSelect}
-            accessors={accessors}
-            components={components}
-            onDoubleClick={onDoubleClick}
-            continuesPrior={dates.lt(accessors.end(event), slotStart, 'day')}
-            continuesAfter={dates.gte(accessors.start(event), slotEnd, 'day')}
-            slotStart={slotStart}
-            slotEnd={slotEnd}
-            selected={isSelected(event, selected)}
-          />
+          <Fragment>
+            {(view === views.WEEK || view === views.WORK_WEEK) && (
+              <label key={idx} className="label-star-end">
+                {accessors.end(event) &&
+                localizer.format(accessors.end(event), 'HH:MM') !==
+                  localizer.format(accessors.start(event), 'HH:MM') &&
+                event.SHOW_END_DATE
+                  ? `${localizer.format(
+                      accessors.start(event),
+                      'HH:MM'
+                    )} - ${localizer.format(accessors.end(event), 'HH:MM')}`
+                  : localizer.format(accessors.start(event), 'HH:MM')}
+              </label>
+            )}
+            <EventCell
+              key={idx}
+              type="popup"
+              event={event}
+              getters={getters}
+              onSelect={onSelect}
+              accessors={accessors}
+              components={components}
+              onDoubleClick={onDoubleClick}
+              continuesPrior={dates.lt(accessors.end(event), slotStart, 'day')}
+              continuesAfter={dates.gte(accessors.start(event), slotEnd, 'day')}
+              slotStart={slotStart}
+              slotEnd={slotEnd}
+              selected={isSelected(event, selected)}
+            />
+          </Fragment>
         ))}
       </div>
     )

@@ -909,6 +909,7 @@ class Calendar extends React.Component {
         )}
         <View
           {...props}
+          view={view}
           events={events}
           date={current}
           getNow={getNow}

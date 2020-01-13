@@ -2,7 +2,7 @@ import _extends from '@babel/runtime/helpers/esm/extends'
 import _objectWithoutPropertiesLoose from '@babel/runtime/helpers/esm/objectWithoutPropertiesLoose'
 import _inheritsLoose from '@babel/runtime/helpers/esm/inheritsLoose'
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { Fragment, Component } from 'react'
 import { uncontrollable } from 'uncontrollable'
 import clsx from 'clsx'
 import invariant from 'invariant'
@@ -532,6 +532,7 @@ var Popup =
 
     _proto.render = function render() {
       var _this$props2 = this.props,
+        view = _this$props2.view,
         events = _this$props2.events,
         selected = _this$props2.selected,
         getters = _this$props2.getters,
@@ -567,21 +568,41 @@ var Popup =
           localizer.format(slotStart, 'dayHeaderFormat')
         ),
         events.map(function(event, idx) {
-          return React.createElement(EventCell, {
-            key: idx,
-            type: 'popup',
-            event: event,
-            getters: getters,
-            onSelect: onSelect,
-            accessors: accessors,
-            components: components,
-            onDoubleClick: onDoubleClick,
-            continuesPrior: lt(accessors.end(event), slotStart, 'day'),
-            continuesAfter: gte(accessors.start(event), slotEnd, 'day'),
-            slotStart: slotStart,
-            slotEnd: slotEnd,
-            selected: isSelected(event, selected),
-          })
+          return React.createElement(
+            Fragment,
+            null,
+            (view === views.WEEK || view === views.WORK_WEEK) &&
+              React.createElement(
+                'label',
+                {
+                  key: idx,
+                  className: 'label-star-end',
+                },
+                accessors.end(event) &&
+                  localizer.format(accessors.end(event), 'HH:MM') !==
+                    localizer.format(accessors.start(event), 'HH:MM') &&
+                  event.SHOW_END_DATE
+                  ? localizer.format(accessors.start(event), 'HH:MM') +
+                      ' - ' +
+                      localizer.format(accessors.end(event), 'HH:MM')
+                  : localizer.format(accessors.start(event), 'HH:MM')
+              ),
+            React.createElement(EventCell, {
+              key: idx,
+              type: 'popup',
+              event: event,
+              getters: getters,
+              onSelect: onSelect,
+              accessors: accessors,
+              components: components,
+              onDoubleClick: onDoubleClick,
+              continuesPrior: lt(accessors.end(event), slotStart, 'day'),
+              continuesAfter: gte(accessors.start(event), slotEnd, 'day'),
+              slotStart: slotStart,
+              slotEnd: slotEnd,
+              selected: isSelected(event, selected),
+            })
+          )
         })
       )
     }
@@ -3236,12 +3257,16 @@ function TimeGridEvent(props) {
     top = style.top,
     width = style.width,
     xOffset = style.xOffset
+  var isShortEvent =
+    diff(end, start, 'minutes') < 31 && diff(end, start, 'minutes') > 0
   var inner = [
     React.createElement(
       'div',
       {
         key: '1',
-        className: 'rbc-event-label',
+        className: clsx('rbc-event-label', {
+          shortEvent: isShortEvent,
+        }),
       },
       label
     ),
@@ -3297,6 +3322,182 @@ function TimeGridEvent(props) {
   )
 }
 
+var EventsMultipleWeek =
+  /*#__PURE__*/
+  (function(_Component) {
+    _inheritsLoose(EventsMultipleWeek, _Component)
+
+    function EventsMultipleWeek(props) {
+      var _this
+
+      _this = _Component.call(this, props) || this
+
+      _this.handleShowMore = function(_ref) {
+        var target = _ref.target
+        var _this$props = _this.props,
+          popup = _this$props.popup,
+          onDrillDown = _this$props.onDrillDown,
+          getDrilldownView = _this$props.getDrilldownView,
+          events = _this$props.events,
+          date = _this$props.date //cancel any pending selections so only the event click goes through.
+
+        _this.clearSelection()
+
+        if (popup) {
+          var position = getPosition(
+            target,
+            findDOMNode(_assertThisInitialized(_this))
+          )
+
+          _this.setState({
+            overlay: {
+              date: date,
+              events: events,
+              position: position,
+              target: target,
+            },
+          })
+        } else {
+          notify(onDrillDown, [date, getDrilldownView(date) || views.DAY])
+        } // notify(onShowMore, [events, date, slot])
+      }
+
+      _this.state = {
+        label: '',
+        continuesEarlier: '',
+        continuesLater: '',
+        showModalEvents: false,
+      }
+      _this.slotMetrics = getSlotMetrics$1(_this.props)
+      return _this
+    }
+
+    var _proto = EventsMultipleWeek.prototype
+
+    _proto.componentDidMount = function componentDidMount() {
+      var _this$props2 = this.props,
+        accessors = _this$props2.accessors,
+        events = _this$props2.events,
+        localizer = _this$props2.localizer
+      var messages = localizer.messages
+
+      if (events.length > 0) {
+        var end = accessors.end(events[0])
+        var start = accessors.start(events[0])
+        var format = 'eventTimeRangeFormat'
+        var startsBeforeDay = this.slotMetrics.startsBeforeDay(start)
+        var startsAfterDay = this.slotMetrics.startsAfterDay(end)
+        if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
+        else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
+
+        if (startsBeforeDay && startsAfterDay) {
+          this.setState({
+            label: messages.allDay,
+          })
+        } else if (
+          (eq(start, end, 'hours') && eq(start, end, 'minutes')) ||
+          !events[0].SHOW_END_DATE
+        ) {
+          this.setState({
+            label: localizer.format(start, 'agendaTimeFormat'),
+          })
+        } else {
+          this.setState({
+            label: localizer.format(
+              {
+                start: start,
+                end: end,
+              },
+              format
+            ),
+          })
+        }
+
+        this.setState({
+          continuesEarlier:
+            startsBeforeDay || this.slotMetrics.startsBefore(start),
+          continuesLater: startsAfterDay || this.slotMetrics.startsAfter(end),
+        })
+      }
+    }
+
+    _proto.clearSelection = function clearSelection() {
+      clearTimeout(this._selectTimer)
+      this._pendingSelection = []
+    }
+
+    _proto.renderOverlay = function renderOverlay() {
+      var _this2 = this
+
+      var _this$props3 = this.props,
+        localizer = _this$props3.localizer,
+        accessors = _this$props3.accessors,
+        components = _this$props3.components,
+        getters = _this$props3.getters,
+        events = _this$props3.events,
+        popupClassname = _this$props3.popupClassname,
+        view = _this$props3.view
+      var overlay = (this.state && this.state.overlay) || {}
+      return React.createElement(
+        Overlay,
+        {
+          rootClose: true,
+          placement: 'bottom',
+          show: !!overlay.position,
+          onHide: function onHide() {
+            return _this2.setState({
+              overlay: null,
+            })
+          },
+          target: function target() {
+            return overlay.target
+          },
+        },
+        function(_ref2) {
+          var props = _ref2.props
+          return React.createElement(
+            Popup$1,
+            _extends({}, props, {
+              view: view,
+              accessors: accessors,
+              components: components,
+              getters: getters,
+              localizer: localizer,
+              events: events,
+              position: overlay.position,
+              popupClassname: popupClassname,
+            })
+          )
+        }
+      )
+    }
+
+    _proto.render = function render() {
+      var _this$props4 = this.props,
+        events = _this$props4.events,
+        style = _this$props4.style
+      return React.createElement(
+        Fragment,
+        null,
+        this.renderOverlay(),
+        React.createElement(
+          'a',
+          {
+            className: 'rbc-show-more week',
+            style: {
+              top: style.top + '%',
+              position: 'absolute',
+            },
+            onClick: this.handleShowMore,
+          },
+          'Show ' + events.length + ' events'
+        )
+      )
+    }
+
+    return EventsMultipleWeek
+  })(Component)
+
 var DayColumn =
   /*#__PURE__*/
   (function(_React$Component) {
@@ -3333,67 +3534,185 @@ var DayColumn =
           components = _this$props.components,
           step = _this$props.step,
           timeslots = _this$props.timeslots,
-          dayLayoutAlgorithm = _this$props.dayLayoutAlgorithm
+          dayLayoutAlgorithm = _this$props.dayLayoutAlgorithm,
+          popupClassname = _this$props.popupClassname,
+          view = _this$props.view
 
         var _assertThisInitialize = _assertThisInitialized(_this),
           slotMetrics = _assertThisInitialize.slotMetrics
 
         var messages = localizer.messages
-        var styledEvents = getStyledEvents$1({
-          events: events,
-          accessors: accessors,
-          slotMetrics: slotMetrics,
-          minimumStartDifference: Math.ceil((step * timeslots) / 2),
-          dayLayoutAlgorithm: dayLayoutAlgorithm,
-        })
-        return styledEvents.map(function(_ref, idx) {
-          var event = _ref.event,
-            style = _ref.style
-          var end = accessors.end(event)
-          var start = accessors.start(event)
-          var format = 'eventTimeRangeFormat'
-          var label
-          var startsBeforeDay = slotMetrics.startsBeforeDay(start)
-          var startsAfterDay = slotMetrics.startsAfterDay(end)
-          if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
-          else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
-          if (startsBeforeDay && startsAfterDay) label = messages.allDay
-          else if (
-            (eq(start, end, 'hours') && eq(start, end, 'minutes')) ||
-            !event.SHOW_END_DATE
-          )
-            label = localizer.format(start, 'agendaTimeFormat')
-          else
-            label = localizer.format(
-              {
-                start: start,
-                end: end,
-              },
-              format
-            )
-          var continuesEarlier =
-            startsBeforeDay || slotMetrics.startsBefore(start)
-          var continuesLater = startsAfterDay || slotMetrics.startsAfter(end)
-          return React.createElement(TimeGridEvent, {
-            style: style,
-            event: event,
-            label: label,
-            key: 'evt_' + idx,
-            getters: getters,
-            rtl: rtl,
-            components: components,
-            continuesEarlier: continuesEarlier,
-            continuesLater: continuesLater,
-            accessors: accessors,
-            selected: isSelected(event, selected),
-            onClick: function onClick(e) {
-              return _this._select(event, e)
-            },
-            onDoubleClick: function onDoubleClick(e) {
-              return _this._doubleClick(event, e)
-            },
+
+        if (view === views.WEEK || view === views.WORK_WEEK) {
+          var groups = {}
+          events.forEach(function(event) {
+            groups[accessors.start(event)] =
+              groups[accessors.start(event)] || []
+            groups[accessors.start(event)].push(event)
           })
-        })
+          var sections = {
+            multiple: [],
+            single: [],
+          }
+          Object.values(groups).forEach(function(item) {
+            if (item.length > 1) {
+              sections.multiple.push(item)
+            } else {
+              sections.single.push(item[0])
+            }
+          })
+          var singleEvent = sections.single
+          var multipleEvents = sections.multiple
+          var styledSingleEvents = getStyledEvents$1({
+            events: singleEvent,
+            accessors: accessors,
+            slotMetrics: slotMetrics,
+            minimumStartDifference: Math.ceil((step * timeslots) / 2),
+            dayLayoutAlgorithm: dayLayoutAlgorithm,
+          })
+          return React.createElement(
+            Fragment,
+            null,
+            styledSingleEvents.map(function(_ref, idx) {
+              var event = _ref.event,
+                style = _ref.style
+              var end = accessors.end(event)
+              var start = accessors.start(event)
+              var format = 'eventTimeRangeFormat'
+              var label
+              var startsBeforeDay = slotMetrics.startsBeforeDay(start)
+              var startsAfterDay = slotMetrics.startsAfterDay(end)
+              if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
+              else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
+              if (startsBeforeDay && startsAfterDay) label = messages.allDay
+              else if (
+                (eq(start, end, 'hours') && eq(start, end, 'minutes')) ||
+                !event.SHOW_END_DATE
+              )
+                label = localizer.format(start, 'agendaTimeFormat')
+              else
+                label = localizer.format(
+                  {
+                    start: start,
+                    end: end,
+                  },
+                  format
+                )
+              var continuesEarlier =
+                startsBeforeDay || slotMetrics.startsBefore(start)
+              var continuesLater =
+                startsAfterDay || slotMetrics.startsAfter(end)
+              return React.createElement(TimeGridEvent, {
+                style: style,
+                event: event,
+                label: label,
+                key: 'evt_' + idx,
+                getters: getters,
+                rtl: rtl,
+                components: components,
+                continuesEarlier: continuesEarlier,
+                continuesLater: continuesLater,
+                accessors: accessors,
+                selected: isSelected(event, selected),
+                onClick: function onClick(e) {
+                  return _this._select(event, e)
+                },
+                onDoubleClick: function onDoubleClick(e) {
+                  return _this._doubleClick(event, e)
+                },
+              })
+            }),
+            multipleEvents.map(function(events, idx) {
+              var styledEvents = getStyledEvents$1({
+                events: [events[0]],
+                accessors: accessors,
+                slotMetrics: slotMetrics,
+                minimumStartDifference: Math.ceil((step * timeslots) / 2),
+                dayLayoutAlgorithm: dayLayoutAlgorithm,
+              })
+
+              var props = _extends(_extends({}, _this.props), {
+                rtl: rtl,
+                view: view,
+                step: step,
+                events: events,
+                getters: getters,
+                key: 'evt_multiple' + idx,
+                selected: selected,
+                accessors: accessors,
+                localizer: localizer,
+                timeslots: timeslots,
+                components: components,
+                popupClassname: popupClassname,
+                dayLayoutAlgorithm: dayLayoutAlgorithm,
+                style: styledEvents[0].style,
+              })
+
+              return React.createElement(EventsMultipleWeek, props)
+            })
+          )
+        } else {
+          var styleEvent = getStyledEvents$1({
+            events: events,
+            accessors: accessors,
+            slotMetrics: slotMetrics,
+            minimumStartDifference: Math.ceil((step * timeslots) / 2),
+            dayLayoutAlgorithm: dayLayoutAlgorithm,
+          })
+          return React.createElement(
+            Fragment,
+            null,
+            styleEvent.map(function(_ref2, idx) {
+              var event = _ref2.event,
+                style = _ref2.style
+              var end = accessors.end(event)
+              var start = accessors.start(event)
+              var format = 'eventTimeRangeFormat'
+              var label
+              var startsBeforeDay = slotMetrics.startsBeforeDay(start)
+              var startsAfterDay = slotMetrics.startsAfterDay(end)
+              if (startsBeforeDay) format = 'eventTimeRangeEndFormat'
+              else if (startsAfterDay) format = 'eventTimeRangeStartFormat'
+              if (startsBeforeDay && startsAfterDay) label = messages.allDay
+              else if (
+                (eq(start, end, 'hours') && eq(start, end, 'minutes')) ||
+                !event.SHOW_END_DATE
+              )
+                label = localizer.format(start, 'agendaTimeFormat')
+              else
+                label = localizer.format(
+                  {
+                    start: start,
+                    end: end,
+                  },
+                  format
+                )
+              var continuesEarlier =
+                startsBeforeDay || slotMetrics.startsBefore(start)
+              var continuesLater =
+                startsAfterDay || slotMetrics.startsAfter(end)
+              return React.createElement(TimeGridEvent, {
+                style: style,
+                event: event,
+                label: label,
+                key: 'evt_' + idx,
+                getters: getters,
+                rtl: rtl,
+                components: components,
+                continuesEarlier: continuesEarlier,
+                continuesLater: continuesLater,
+                accessors: accessors,
+                selected: isSelected(event, selected),
+                onClick: function onClick(e) {
+                  return _this._select(event, e)
+                },
+                onDoubleClick: function onDoubleClick(e) {
+                  return _this._doubleClick(event, e)
+                },
+              })
+            })
+          )
+        }
       }
 
       _this._selectable = function() {
@@ -3531,12 +3850,12 @@ var DayColumn =
         _this._selector = null
       }
 
-      _this._selectSlot = function(_ref2) {
-        var startDate = _ref2.startDate,
-          endDate = _ref2.endDate,
-          action = _ref2.action,
-          bounds = _ref2.bounds,
-          box = _ref2.box
+      _this._selectSlot = function(_ref3) {
+        var startDate = _ref3.startDate,
+          endDate = _ref3.endDate,
+          action = _ref3.action,
+          bounds = _ref3.bounds,
+          box = _ref3.box
         var current = startDate,
           slots = []
 
@@ -4380,7 +4699,8 @@ var TimeGrid =
         components = _this$props2.components,
         accessors = _this$props2.accessors,
         localizer = _this$props2.localizer,
-        dayLayoutAlgorithm = _this$props2.dayLayoutAlgorithm
+        dayLayoutAlgorithm = _this$props2.dayLayoutAlgorithm,
+        view = _this$props2.view
       var resources = this.memoizedResources(this.props.resources, accessors)
       var groupedEvents = resources.groupEvents(events)
       return resources.map(function(_ref, i) {
@@ -4400,6 +4720,7 @@ var TimeGrid =
           return React.createElement(
             DayColumn,
             _extends({}, _this2.props, {
+              view: view,
               localizer: localizer,
               min: merge(date, min),
               max: merge(date, max),
@@ -4675,13 +4996,19 @@ var Week =
     _proto.render = function render() {
       var _this$props = this.props,
         date = _this$props.date,
-        props = _objectWithoutPropertiesLoose(_this$props, ['date'])
+        popupClassname = _this$props.popupClassname,
+        props = _objectWithoutPropertiesLoose(_this$props, [
+          'date',
+          'popupClassname',
+        ])
 
       var range = Week.range(date, this.props)
       return React.createElement(
         TimeGrid,
         _extends({}, props, {
           range: range,
+          view: props.view,
+          popupClassname: popupClassname,
           eventOffset: 15,
         })
       )
@@ -5661,6 +5988,7 @@ var Calendar =
         React.createElement(
           View,
           _extends({}, props, {
+            view: view,
             events: events,
             date: current,
             getNow: getNow,

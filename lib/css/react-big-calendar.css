@@ -275,6 +275,14 @@ button.rbc-input::-moz-focus-inner {
   height: auto;
   line-height: normal;
 }
+.rbc-show-more.week {
+  background-color: transparent !important;
+  font-size: 100%;
+  padding: 8px 0px 0px 5px;
+}
+.rbc-show-more.week:focus {
+  color: #23527c;
+}
 
 .rbc-month-view {
   position: relative;
@@ -356,6 +364,15 @@ button.rbc-input::-moz-focus-inner {
   border-bottom: 1px solid #e5e5e5;
   margin: -10px -10px 5px -10px;
   padding: 2px 10px;
+}
+
+.label-star-end {
+  font-weight: bold;
+  font-size: 85%;
+  height: auto;
+  line-height: normal;
+  text-align: center;
+  display: block;
 }
 
 .rbc-agenda-view {
@@ -470,6 +487,9 @@ button.rbc-input::-moz-focus-inner {
   flex: none;
   padding-right: 5px;
   width: auto;
+}
+.rbc-day-slot .rbc-event-label.shortEvent {
+  display: none;
 }
 .rbc-day-slot .rbc-event-content {
   width: 100%;
