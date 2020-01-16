@@ -68,7 +68,8 @@ class EventsMultipleWeek extends Component {
     this._pendingSelection = []
   }
 
-  handleShowMore = ({ target }) => {
+  handleShowMore = event => {
+    const { target } = event
     const { popup, onDrillDown, getDrilldownView, events, date } = this.props
     //cancel any pending selections so only the event click goes through.
     this.clearSelection()

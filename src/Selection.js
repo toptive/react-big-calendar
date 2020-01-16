@@ -335,6 +335,13 @@ class Selection {
   }
 
   _handleClickEvent(e) {
+    if (
+      e.target.classList.contains('rbc-show-more') &&
+      e.target.classList.contains('week')
+    ) {
+      return
+    }
+
     const { pageX, pageY, clientX, clientY } = getEventCoordinates(e)
     const now = new Date().getTime()
 
@@ -411,8 +418,8 @@ class Selection {
     let { x, y, isTouch } = this._initialEventData
     return (
       !isTouch &&
-      (Math.abs(pageX - x) <= clickTolerance &&
-        Math.abs(pageY - y) <= clickTolerance)
+      Math.abs(pageX - x) <= clickTolerance &&
+        Math.abs(pageY - y) <= clickTolerance
     )
   }
 }
@@ -454,15 +461,17 @@ export function objectsCollide(nodeA, nodeB, tolerance = 0) {
     bottom: bBottom = bTop,
   } = getBoundsForNode(nodeB)
 
-  return !// 'a' bottom doesn't touch 'b' top
-  (
-    aBottom - tolerance < bTop ||
-    // 'a' top doesn't touch 'b' bottom
-    aTop + tolerance > bBottom ||
-    // 'a' right doesn't touch 'b' left
-    aRight - tolerance < bLeft ||
-    // 'a' left doesn't touch 'b' right
-    aLeft + tolerance > bRight
+  return !(
+    // 'a' bottom doesn't touch 'b' top
+    (
+      aBottom - tolerance < bTop ||
+      // 'a' top doesn't touch 'b' bottom
+      aTop + tolerance > bBottom ||
+      // 'a' right doesn't touch 'b' left
+      aRight - tolerance < bLeft ||
+      // 'a' left doesn't touch 'b' right
+      aLeft + tolerance > bRight
+    )
   )
 }
 

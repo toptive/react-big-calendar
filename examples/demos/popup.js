@@ -13,6 +13,7 @@ let Popup = ({ localizer }) => (
     </ExampleControlSlot.Entry>
     <Calendar
       popup
+      selectable
       events={events}
       localizer={localizer}
       defaultDate={new Date(2015, 3, 1)}

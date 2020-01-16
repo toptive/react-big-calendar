@@ -69,9 +69,9 @@ class Popup extends React.Component {
           {localizer.format(slotStart, 'dayHeaderFormat')}
         </div>
         {events.map((event, idx) => (
-          <Fragment>
+          <Fragment key={idx + Math.random()}>
             {(view === views.WEEK || view === views.WORK_WEEK) && (
-              <label key={idx} className="label-star-end">
+              <label key={idx + Math.random()} className="label-star-end">
                 {accessors.end(event) &&
                 localizer.format(accessors.end(event), 'HH:MM') !==
                   localizer.format(accessors.start(event), 'HH:MM') &&

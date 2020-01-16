@@ -2956,9 +2956,7 @@
     return (
       !!length &&
       (type == 'number' || (type != 'symbol' && reIsUint.test(value))) &&
-      value > -1 &&
-      value % 1 == 0 &&
-      value < length
+      value > -1 && value % 1 == 0 && value < length
     )
   }
 
@@ -3736,12 +3734,14 @@
           events.map(function(event, idx) {
             return React__default.createElement(
               React.Fragment,
-              null,
+              {
+                key: idx + Math.random(),
+              },
               (view === views.WEEK || view === views.WORK_WEEK) &&
                 React__default.createElement(
                   'label',
                   {
-                    key: idx,
+                    key: idx + Math.random(),
                     className: 'label-star-end',
                   },
                   accessors.end(event) &&
@@ -7984,6 +7984,13 @@
       }
 
       _proto._handleClickEvent = function _handleClickEvent(e) {
+        if (
+          e.target.classList.contains('rbc-show-more') &&
+          e.target.classList.contains('week')
+        ) {
+          return
+        }
+
         var _getEventCoordinates5 = getEventCoordinates(e),
           pageX = _getEventCoordinates5.pageX,
           pageY = _getEventCoordinates5.pageY,
@@ -10114,8 +10121,7 @@
       // Non `Object` object instances with different constructors are not equal.
       if (
         objCtor != othCtor &&
-        'constructor' in object &&
-        'constructor' in other &&
+        'constructor' in object && 'constructor' in other &&
         !(
           typeof objCtor == 'function' &&
           objCtor instanceof objCtor &&
@@ -13445,8 +13451,9 @@
 
         _this = _Component.call(this, props) || this
 
-        _this.handleShowMore = function(_ref) {
-          var target = _ref.target
+        _this.handleShowMore = function(event) {
+          // event.stopPropagation();
+          var target = event.target
           var _this$props = _this.props,
             popup = _this$props.popup,
             onDrillDown = _this$props.onDrillDown,
@@ -13566,8 +13573,8 @@
               return overlay.target
             },
           },
-          function(_ref2) {
-            var props = _ref2.props
+          function(_ref) {
+            var props = _ref.props
             return React__default.createElement(
               Popup$1,
               _extends({}, props, {
