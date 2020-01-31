@@ -4,6 +4,7 @@ export default [
   {
     id: 0,
     title: 'All Day Event very long title',
+    string: 'very long title',
     allDay: true,
     start: new Date(2020, 1, 9),
     end: new Date(2020, 1, 9),
@@ -103,6 +104,8 @@ export default [
     title: 'Multi-test Event',
     start: new Date(2020, 1, 9, 6, 0, 0),
     end: new Date(2020, 1, 9, 7, 0, 0),
+    allDay: true,
+    HIDE_TIME: true,
   },
   {
     id: 14,
@@ -127,6 +130,7 @@ export default [
     title: 'Point in Time Event',
     start: now,
     end: now,
+    string: 'string nuevo',
   },
   {
     id: 16,

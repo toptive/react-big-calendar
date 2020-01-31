@@ -130,10 +130,13 @@ class Agenda extends React.Component {
 
   timeRangeLabel = (day, event) => {
     let { accessors, localizer, components } = this.props
+    const hide_time = event.HIDE_TIME || false
 
     let labelClass = '',
       TimeComponent = components.time,
-      label = localizer.messages.allDay
+      label = !hide_time
+        ? event.STRING_ALL_DAY || localizer.messages.allDay
+        : ''
 
     let end = accessors.end(event)
     let start = accessors.start(event)

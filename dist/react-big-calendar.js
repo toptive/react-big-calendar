@@ -14919,14 +14919,14 @@
         allDayEvents.sort(function(a, b) {
           return sortEvents(a, b, accessors)
         })
-        var hide = rangeEvents.length ? false : true
+        var hideCellsTime = rangeEvents.length ? false : true
         return React__default.createElement(
           'div',
           {
             className: clsx(
               'rbc-time-view',
               resources && 'rbc-time-view-resources',
-              hide && 'no-flex-1'
+              hideCellsTime && 'no-flex-1'
             ),
           },
           React__default.createElement(TimeGridHeader, {
@@ -14955,7 +14955,7 @@
             'div',
             {
               ref: this.contentRef,
-              className: clsx('rbc-time-content', hide && 'd-none'),
+              className: clsx('rbc-time-content', hideCellsTime && 'd-none'),
               onScroll: this.handleScroll,
             },
             React__default.createElement(TimeGutter, {
@@ -15395,9 +15395,10 @@
             accessors = _this$props2.accessors,
             localizer = _this$props2.localizer,
             components = _this$props2.components
+          var hide_time = event.HIDE_TIME || false
           var labelClass = '',
             TimeComponent = components.time,
-            label = localizer.messages.allDay
+            label = !hide_time ? event.STRING || localizer.messages.allDay : ''
           var end = accessors.end(event)
           var start = accessors.start(event)
 
