@@ -46,6 +46,10 @@
     box-sizing: border-box;
     min-height: 20px;
   }
+
+  &.no-flex-1 {
+    flex: none;
+  }
 }
 
 .rbc-time-header {
@@ -127,6 +131,10 @@
     width: 100%;
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  &.d-none {
+    display: none;
   }
 }
 

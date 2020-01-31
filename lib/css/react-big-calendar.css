@@ -599,6 +599,9 @@ button.rbc-input::-moz-focus-inner {
   box-sizing: border-box;
   min-height: 20px;
 }
+.rbc-time-view.no-flex-1 {
+  flex: none;
+}
 
 .rbc-time-header {
   display: flex;
@@ -662,6 +665,9 @@ button.rbc-input::-moz-focus-inner {
   width: 100%;
   user-select: none;
   -webkit-user-select: none;
+}
+.rbc-time-content.d-none {
+  display: none;
 }
 
 .rbc-current-time-indicator {

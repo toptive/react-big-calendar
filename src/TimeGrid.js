@@ -198,11 +198,14 @@ export default class TimeGrid extends Component {
 
     allDayEvents.sort((a, b) => sortEvents(a, b, accessors))
 
+    const hideCellsTime = rangeEvents.length ? false : true
+
     return (
       <div
         className={clsx(
           'rbc-time-view',
-          resources && 'rbc-time-view-resources'
+          resources && 'rbc-time-view-resources',
+          hideCellsTime && 'no-flex-1'
         )}
       >
         <TimeGridHeader
@@ -229,7 +232,7 @@ export default class TimeGrid extends Component {
         />
         <div
           ref={this.contentRef}
-          className="rbc-time-content"
+          className={clsx('rbc-time-content', hideCellsTime && 'd-none')}
           onScroll={this.handleScroll}
         >
           <TimeGutter

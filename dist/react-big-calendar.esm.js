@@ -3342,7 +3342,6 @@ var EventsMultipleWeek =
       _this = _Component.call(this, props) || this
 
       _this.handleShowMore = function(event) {
-        // event.stopPropagation();
         var target = event.target
         var _this$props = _this.props,
           popup = _this$props.popup,
@@ -4789,12 +4788,14 @@ var TimeGrid =
       allDayEvents.sort(function(a, b) {
         return sortEvents(a, b, accessors)
       })
+      var hide = rangeEvents.length ? false : true
       return React.createElement(
         'div',
         {
           className: clsx(
             'rbc-time-view',
-            resources && 'rbc-time-view-resources'
+            resources && 'rbc-time-view-resources',
+            hide && 'no-flex-1'
           ),
         },
         React.createElement(TimeGridHeader, {
@@ -4823,7 +4824,7 @@ var TimeGrid =
           'div',
           {
             ref: this.contentRef,
-            className: 'rbc-time-content',
+            className: clsx('rbc-time-content', hide && 'd-none'),
             onScroll: this.handleScroll,
           },
           React.createElement(TimeGutter, {
