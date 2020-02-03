@@ -39,7 +39,10 @@ function TimeGridEvent(props) {
   const inner = [
     <div
       key="1"
-      className={clsx('rbc-event-label', { shortEvent: isShortEvent })}
+      className={clsx('rbc-event-label', {
+        shortEvent: isShortEvent,
+        hide: event.HIDE_TIME,
+      })}
     >
       {label}
     </div>,

@@ -13385,6 +13385,7 @@
           key: '1',
           className: clsx('rbc-event-label', {
             shortEvent: isShortEvent,
+            hide: event.HIDE_TIME,
           }),
         },
         label
@@ -15398,7 +15399,9 @@
           var hide_time = event.HIDE_TIME || false
           var labelClass = '',
             TimeComponent = components.time,
-            label = !hide_time ? event.STRING || localizer.messages.allDay : ''
+            label = !hide_time
+              ? event.STRING_ALL_DAY || localizer.messages.allDay
+              : ''
           var end = accessors.end(event)
           var start = accessors.start(event)
 
