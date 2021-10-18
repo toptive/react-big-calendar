@@ -159,4 +159,74 @@ export default [
     start: new Date(2015, 3, 14, 18, 30, 0),
     end: new Date(2015, 3, 14, 20, 0, 0),
   },
+  {
+    id: 24,
+    title: 'Tooltip',
+    start: new Date(2015, 3, 23, 17, 30, 0),
+    end: new Date(2015, 3, 23, 20, 30, 0),
+    TOOLTIP: {
+      NAME: 'example_tooltip',
+      TITLE: 'Example Tooltip',
+      TYPE: 'tooltip',
+      STYLE: {
+        TITLE: {
+          COLOR: 'blue',
+        },
+      },
+      OPTIONS: {
+        ICON: 'fas ellipsis-v',
+        TOGGLED_ICON: 'fas ellipsis-v',
+        TEXT: 'Show Extra Input',
+        TOGGLED_TEXT: 'Hide Extra Input',
+        STYLE: 'text-icon',
+      },
+      FIELD_DEFS: [
+        {
+          TYPE: 'button',
+          TITLE: 'Do Clock',
+          NAME: 'clock_button',
+          DEFAULT_VALUE: {
+            TEXT: 'Clock-Out',
+            ICON: 'clock',
+            STYLE: 'text-icon',
+            ACTION: 'do_clock',
+            ACTION_PARAMS: {
+              CONFIG: {
+                RETURN_MESSAGE: 'Return to e-form',
+                COMPLETE_NOTE_MESSAGE: 'View Visit Note',
+                COMPLETE_NOTE_ENDPOINT: {
+                  RES: 'eform',
+                  ACTION: 'view',
+                  PARAMS: {
+                    cat: 'PAT',
+                    id: '1017898',
+                  },
+                },
+              },
+              DATA: {
+                TRANSACTIONID: '1094044',
+                STATUS: '14',
+                STATUSTEXT: 'Clocked-In',
+                CLOCKINTIME: '2019-09-26 13:01:00',
+                XDURATION: 1,
+                SCHEDULEDATE: '2019-09-26',
+                SCHEDULETIME: '',
+              },
+            },
+          },
+          STYLE: {
+            BUTTON: {
+              COLOR: 'blue',
+              BACKGROUND_COLOR: '#EEE',
+              BORDER_COLOR: 'blue',
+              BORDER_WIDTH: '4px',
+              BORDER_STYLE: 'double',
+              MAX_WIDTH: '500px',
+              MARGIN: '0 auto',
+            },
+          },
+        },
+      ],
+    },
+  },
 ]
