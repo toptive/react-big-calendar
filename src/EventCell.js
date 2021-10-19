@@ -2,8 +2,36 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import clsx from 'clsx'
 import * as dates from './utils/dates'
-
+import EventTooltip from './EventTooltip'
 class EventCell extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      renderTooltip: false,
+    }
+
+    this.clickTooltip = this.clickTooltip.bind(this)
+  }
+
+  clickTooltip = () => {
+    this.setState({
+      renderTooltip: !this.state.renderTooltip,
+    })
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { state } = this
+
+    return state.renderTooltip !== nextState.renderTooltip
+  }
+
+  onClickAction = event => {
+    if (event.TOOLTIP) {
+      this.clickTooltip()
+    }
+  }
+
   render() {
     let {
       style,
@@ -24,6 +52,8 @@ class EventCell extends React.Component {
       slotEnd,
       ...props
     } = this.props
+
+    let { renderTooltip } = this.state
 
     let title = accessors.title(event)
     let tooltip = accessors.tooltip(event)
@@ -56,23 +86,33 @@ class EventCell extends React.Component {
     )
 
     return (
-      <EventWrapper {...this.props} type="date">
-        <div
-          {...props}
-          tabIndex={0}
-          style={{ ...userProps.style, ...style }}
-          className={clsx('rbc-event', className, userProps.className, {
-            'rbc-selected': selected,
-            'rbc-event-allday': showAsAllDay,
-            'rbc-event-continues-prior': continuesPrior,
-            'rbc-event-continues-after': continuesAfter,
-          })}
-          onClick={e => onSelect && onSelect(event, e)}
-          onDoubleClick={e => onDoubleClick && onDoubleClick(event, e)}
-        >
-          {typeof children === 'function' ? children(content) : content}
-        </div>
-      </EventWrapper>
+      <>
+        <EventWrapper {...this.props} type="date">
+          <div
+            {...props}
+            tabIndex={0}
+            style={{ ...userProps.style, ...style }}
+            className={clsx('rbc-event', className, userProps.className, {
+              'rbc-selected': selected,
+              'rbc-event-allday': showAsAllDay,
+              'rbc-event-continues-prior': continuesPrior,
+              'rbc-event-continues-after': continuesAfter,
+            })}
+            //onClick={() => this.onClickAction(event)}
+            onClick={e => {
+              if (event.TOOLTIP) {
+                this.onClickAction(event)
+              } else {
+                onSelect && onSelect(event, e)
+              }
+            }}
+            onDoubleClick={e => onDoubleClick && onDoubleClick(event, e)}
+          >
+            {typeof children === 'function' ? children(content) : content}
+          </div>
+        </EventWrapper>
+        {renderTooltip && <EventTooltip />}
+      </>
     )
   }
 }
