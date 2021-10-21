@@ -98,7 +98,6 @@ class EventCell extends React.Component {
               'rbc-event-continues-prior': continuesPrior,
               'rbc-event-continues-after': continuesAfter,
             })}
-            //onClick={() => this.onClickAction(event)}
             onClick={e => {
               if (event.TOOLTIP) {
                 this.onClickAction(event)
@@ -111,7 +110,7 @@ class EventCell extends React.Component {
             {typeof children === 'function' ? children(content) : content}
           </div>
         </EventWrapper>
-        {renderTooltip && <EventTooltip />}
+        {renderTooltip && <EventTooltip event={event.TOOLTIP} />}
       </>
     )
   }
