@@ -226,6 +226,11 @@ export default [
             },
           },
         },
+        {
+          NAME: 'carousel_text',
+          TYPE: 'text',
+          TITLE: 'Text input',
+        },
       ],
     },
   },
