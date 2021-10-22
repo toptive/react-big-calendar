@@ -13,6 +13,7 @@ class EventEndingRow extends React.Component {
     let {
       segments,
       slotMetrics: { slots },
+      monthRowLimit,
     } = this.props
     let rowSegments = eventLevels(segments).levels[0]
 
@@ -33,7 +34,7 @@ class EventEndingRow extends React.Component {
 
       let gap = Math.max(0, left - lastEnd)
 
-      if (this.canRenderSlotEvent(left, span)) {
+      if (!monthRowLimit && this.canRenderSlotEvent(left, span)) {
         let content = EventRowMixin.renderEvent(this.props, event)
 
         if (gap) {
@@ -101,6 +102,7 @@ EventEndingRow.propTypes = {
   segments: PropTypes.array,
   slots: PropTypes.number,
   onShowMore: PropTypes.func,
+  monthRowLimit: PropTypes.number,
   ...EventRowMixin.propTypes,
 }
 

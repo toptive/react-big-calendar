@@ -294,7 +294,6 @@ button.rbc-input::-moz-focus-inner {
   width: 100%;
   user-select: none;
   -webkit-user-select: none;
-  height: 600px;
 }
 
 .rbc-month-header {

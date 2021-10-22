@@ -116,6 +116,7 @@ class DateContentRow extends React.Component {
       resourceId,
       longPressThreshold,
       isAllDay,
+      monthRowLimit,
     } = this.props
 
     if (renderForMeasure) return this.renderDummy()
@@ -168,6 +169,7 @@ class DateContentRow extends React.Component {
               <EventEndingRow
                 segments={extra}
                 onShowMore={this.handleShowMore}
+                monthRowLimit={monthRowLimit}
                 {...eventRowProps}
               />
             )}
@@ -211,6 +213,8 @@ DateContentRow.propTypes = {
 
   minRows: PropTypes.number.isRequired,
   maxRows: PropTypes.number.isRequired,
+
+  monthRowLimit: PropTypes.number,
 }
 
 DateContentRow.defaultProps = {

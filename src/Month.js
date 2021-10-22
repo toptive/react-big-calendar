@@ -31,7 +31,7 @@ class MonthView extends React.Component {
     this._pendingSelection = []
     this.slotRowRef = React.createRef()
     this.state = {
-      rowLimit: 5,
+      rowLimit: args.monthRowLimit ? args.monthRowLimit + 1 : 5,
       needLimitMeasure: true,
     }
   }
@@ -103,6 +103,7 @@ class MonthView extends React.Component {
       longPressThreshold,
       accessors,
       getters,
+      monthRowLimit,
     } = this.props
 
     const { needLimitMeasure, rowLimit } = this.state
@@ -122,6 +123,7 @@ class MonthView extends React.Component {
         range={week}
         events={events}
         maxRows={rowLimit}
+        monthRowLimit={monthRowLimit}
         selected={selected}
         selectable={selectable}
         components={components}
@@ -228,10 +230,14 @@ class MonthView extends React.Component {
     )
   }
 
-  measureRowLimit() {
+  measureRowLimit(args) {
+    const { monthRowLimit } = args
+
     this.setState({
       needLimitMeasure: false,
-      rowLimit: this.slotRowRef.current.getRowLimit(),
+      rowLimit: monthRowLimit
+        ? monthRowLimit + 1
+        : this.slotRowRef.current.getRowLimit(),
     })
   }
 
@@ -329,6 +335,8 @@ MonthView.propTypes = {
   onShowMore: PropTypes.func,
   onDrillDown: PropTypes.func,
   getDrilldownView: PropTypes.func.isRequired,
+
+  monthRowLimit: PropTypes.number,
 
   popup: PropTypes.bool,
 

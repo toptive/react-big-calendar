@@ -732,6 +732,11 @@ class Calendar extends React.Component {
      * or custom `Function(events, minimumStartDifference, slotMetrics, accessors)`
      */
     dayLayoutAlgorithm: DayLayoutAlgorithmPropType,
+
+    /**
+     * Use this to limit the maximum number of rows on the month view and prevent events rendering on the EventEndingRow
+     */
+    monthRowLimit: PropTypes.number,
   }
 
   static defaultProps = {
