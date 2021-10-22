@@ -82,6 +82,12 @@ export default [
     end: new Date(2015, 3, 13, 10, 30, 0),
   },
   {
+    id: 11.5,
+    title: 'Late Night Event',
+    start: new Date(2015, 3, 16, 19, 30, 0),
+    end: new Date(2015, 3, 18, 2, 0, 0),
+  },
+  {
     id: 12,
     title: 'Late Night Event',
     start: new Date(2015, 3, 17, 19, 30, 0),
@@ -92,6 +98,12 @@ export default [
     title: 'Late Same Night Event',
     start: new Date(2015, 3, 17, 19, 30, 0),
     end: new Date(2015, 3, 17, 23, 30, 0),
+  },
+  {
+    id: 12.7,
+    title: 'Late Same Night Event',
+    start: new Date(2015, 3, 18, 19, 30, 0),
+    end: new Date(2015, 3, 18, 23, 30, 0),
   },
   {
     id: 13,

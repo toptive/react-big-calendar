@@ -16,6 +16,7 @@ let Popup = ({ localizer }) => (
       selectable
       events={events}
       localizer={localizer}
+      monthRowLimit={2}
       defaultDate={new Date(2015, 3, 1)}
     />
   </React.Fragment>
